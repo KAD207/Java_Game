@@ -78,7 +78,7 @@ public class Window {
     }
 
     public void init(){
-        // Setup an error callback
+        // Set up an error callback
         GLFWErrorCallback.createPrint(System.err).set();
 
         // init GLFW
@@ -118,16 +118,15 @@ public class Window {
         // bindings available for use.
         GL.createCapabilities();
 
-        Window.changeScene(0);
+
+        this.currentScene = new LevelEditorScene();
+        this.currentScene.init();
     }
 
     public void loop(){
 
-        float beginTime = Time.getTimeElapsed();
-        float endTime = Time.getTimeElapsed();
+        float beginTime = Time.getTimeStarted();
         float dt = -1.0f;
-
-
 
         while (!glfwWindowShouldClose(glfwWindow)){
             // poll events
@@ -157,9 +156,9 @@ public class Window {
             glfwSwapBuffers(glfwWindow);
 
             // putting it here to improve time it takes to render
-            endTime = Time.getTimeElapsed();
+            float endTime = Time.getTimeStarted();
             dt = endTime - beginTime;
-            beginTime = Time.getTimeElapsed();
+            beginTime = endTime;
         }
     }
 }
