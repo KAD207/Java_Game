@@ -3,6 +3,9 @@ package WinPack;
 import org.lwjgl.Version;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.opengl.GL;
+import utility.Time;
+
+import java.util.Objects;
 
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.*;
@@ -11,14 +14,16 @@ import static org.lwjgl.system.MemoryUtil.NULL;
 
 public class Window {
 
-    private int width, height;
-    private String title;
+    private final int width, height;
+    private final String title;
     private long glfwWindow;
 
-    private float r, g, b, a;
+    public float r, g, b, a;
     private boolean fadeToBlack = false;
 
     private static Window window = null;
+
+    private static Scene currentScene = null;
 
     private Window(){
         this.width = 1920;
@@ -29,6 +34,25 @@ public class Window {
         b = 1;
         a = 1;
 
+    }
+
+    public static void changeScene(int newScene){
+        switch(newScene){
+            case 0 -> {
+                currentScene = new LevelEditorScene();
+                // curentScene.init();
+                break;
+            }
+            case 1 -> {
+                currentScene = new LevelScene();
+                // curentScene.init();
+                break;
+            }
+            default -> {
+                assert false : "Unknown scene '" +  newScene + "'";
+                break;
+            }
+        }
     }
 
     public static Window get(){
@@ -50,7 +74,7 @@ public class Window {
 
         // terminate GLFW and the free error callback
         glfwTerminate();
-        glfwSetErrorCallback(null).free();
+        Objects.requireNonNull(glfwSetErrorCallback(null)).free();
     }
 
     public void init(){
@@ -93,9 +117,18 @@ public class Window {
         // creates the GLCapabilities instance and makes the OpenGL
         // bindings available for use.
         GL.createCapabilities();
+
+        Window.changeScene(0);
     }
 
     public void loop(){
+
+        float beginTime = Time.getTimeElapsed();
+        float endTime = Time.getTimeElapsed();
+        float dt = -1.0f;
+
+
+
         while (!glfwWindowShouldClose(glfwWindow)){
             // poll events
             glfwPollEvents();
@@ -103,6 +136,9 @@ public class Window {
             // clear bg color
             glClearColor(r, g, b, a);
             glClear(GL_COLOR_BUFFER_BIT);
+
+            if (dt > 0)
+                currentScene.update(dt);
 
             if (fadeToBlack){
                 r = Math.max(r - 0.01f, 0);
@@ -119,6 +155,11 @@ public class Window {
                 glfwSetWindowShouldClose(glfwWindow, true);
             }
             glfwSwapBuffers(glfwWindow);
+
+            // putting it here to improve time it takes to render
+            endTime = Time.getTimeElapsed();
+            dt = endTime - beginTime;
+            beginTime = Time.getTimeElapsed();
         }
     }
 }
