@@ -40,12 +40,12 @@ public class Window {
         switch(newScene){
             case 0 -> {
                 currentScene = new LevelEditorScene();
-                // curentScene.init();
+                currentScene.init();
                 break;
             }
             case 1 -> {
                 currentScene = new LevelScene();
-                // curentScene.init();
+                currentScene.init();
                 break;
             }
             default -> {
@@ -63,7 +63,6 @@ public class Window {
     }
 
     public void run(){
-        System.out.println("Hello LWJGL " + Version.getVersion() + "!");
 
         init();
         loop();
