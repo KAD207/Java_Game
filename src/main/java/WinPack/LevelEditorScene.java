@@ -3,6 +3,7 @@ package WinPack;
 import org.joml.Vector2f;
 import org.lwjgl.BufferUtils;
 import renderer.Shader;
+import utility.Time;
 
 import java.awt.event.KeyEvent;
 import java.nio.FloatBuffer;
@@ -108,6 +109,7 @@ public class LevelEditorScene extends Scene {
     @Override
     public void update(float dt) {
         camera.position.x -= dt * 50.0f;
+        camera.position.y -= dt * 20.0f;
 
 
 //        System.out.println("FPS: " + (1.0f / dt));
@@ -116,6 +118,7 @@ public class LevelEditorScene extends Scene {
         defaultShader.use();
         defaultShader.uploadMat4f("uProjection", camera.getProjectionMatrix());
         defaultShader.uploadMat4f("uView", camera.getViewMatrix());
+        defaultShader.uploadFloat("uTime", Time.getTimeStarted());
 
         // bind vertex VAO
         glBindVertexArray(vaoID);
