@@ -63,6 +63,10 @@ public class Window {
         return Window.window;
     }
 
+    public static Scene getScene(){
+        return currentScene;
+    }
+
     public void run(){
 
         init();
@@ -119,8 +123,8 @@ public class Window {
         GL.createCapabilities();
 
 
-        this.currentScene = new LevelEditorScene();
-        this.currentScene.init();
+        currentScene = new LevelEditorScene();
+        currentScene.init();
     }
 
     public void loop(){
