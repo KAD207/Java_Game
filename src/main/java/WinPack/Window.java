@@ -1,6 +1,5 @@
 package WinPack;
 
-import org.lwjgl.Version;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.opengl.GL;
 import utility.Time;
@@ -41,11 +40,13 @@ public class Window {
             case 0 -> {
                 currentScene = new LevelEditorScene();
                 currentScene.init();
+                currentScene.start();
                 break;
             }
             case 1 -> {
                 currentScene = new LevelScene();
                 currentScene.init();
+                currentScene.start();
                 break;
             }
             default -> {
