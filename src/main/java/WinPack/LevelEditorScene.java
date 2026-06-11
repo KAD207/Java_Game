@@ -3,6 +3,7 @@ package WinPack;
 import org.joml.Vector2f;
 import org.lwjgl.BufferUtils;
 import renderer.Shader;
+import renderer.Texture;
 import utility.Time;
 
 import java.awt.event.KeyEvent;
@@ -41,23 +42,25 @@ public class LevelEditorScene extends Scene {
     private int vertexID, fragmentID, shaderProgram;
 
     private float[] vertexArray = {
-        // position             // color
-        100.5f, -100.5f, 0.0f,      1.0f, 0.0f, 0.0f, 1.0f, // bottom right 0
-        -100.5f, 100.5f, 0.0f,      0.0f, 1.0f, 0.0f, 1.0f, // top left     1
-        100.5f, 100.5f, 0.0f,       0.0f, 0.0f, 0.0f, 1.0f, // top right    2
-        -100.5f, -100.5f, 0.0f,     1.0f, 1.0f, 0.0f, 1.0f, // bottom left  3
+        // position             // color                    // UV coords
+        160f,   0f, 0.0f,      1.0f, 0.0f, 0.0f, 1.0f,     1, 0,  // bottom right 0
+          0f, 160f, 0.0f,      0.0f, 1.0f, 0.0f, 1.0f,     0, 1,  // top left     1
+        160f, 160f, 0.0f,      0.0f, 0.0f, 0.0f, 1.0f,     1, 1,  // top right    2
+          0f,  0f,  0.0f,      1.0f, 1.0f, 0.0f, 1.0f,    0, 0   // bottom left  3
 
     };
 
     // IMPORTANT: must be in COUNTER-CLOCKWISE order
     private int[] elementArray = {
-        0, 1, 2, // Top right triangle
-        3, 1, 0, // bottom right triangle
+        2, 1, 0, // Top right triangle
+        0, 1, 3 // bottom right triangle
     };
 
     // vertex array object || vertex buffer object || element buffer object
     private int vaoID, vboID, eboID;
+
     private Shader defaultShader;
+    private Texture testTexture;
 
     public LevelEditorScene(){
 
@@ -68,6 +71,7 @@ public class LevelEditorScene extends Scene {
         this.camera = new Camera(new Vector2f(0, 0));
         defaultShader = new Shader("assets/shaders/default.glsl");
         defaultShader.compileAndRun();
+        this.testTexture = new Texture("assets/textures/potato.png");
 
 
         // ==========================================================
@@ -96,14 +100,21 @@ public class LevelEditorScene extends Scene {
         // add the vertex attributes POINTERS
         int posSize = 3;
         int colorSize = 4;
-        int floatSizeBytes = 4;
-        int vertexSizeBytes = (posSize + colorSize) * floatSizeBytes;
+        int uvSize = 2;
+
+        int vertexSizeBytes = (posSize + colorSize + uvSize) * Float.BYTES;
+        // every pointer must be enabled to use
+        // index 0
         glVertexAttribPointer(0, posSize, GL_FLOAT, false, vertexSizeBytes, 0);
         glEnableVertexAttribArray(0);
 
-        glVertexAttribPointer(1, colorSize, GL_FLOAT, false, vertexSizeBytes, posSize * floatSizeBytes);
+        // index 1
+        glVertexAttribPointer(1, colorSize, GL_FLOAT, false, vertexSizeBytes, posSize * Float.BYTES);
         glEnableVertexAttribArray(1);
 
+        // index 2
+        glVertexAttribPointer(2, uvSize, GL_FLOAT, false, vertexSizeBytes, (posSize + colorSize) * Float.BYTES );
+        glEnableVertexAttribArray(2);
     }
 
     @Override
@@ -116,6 +127,18 @@ public class LevelEditorScene extends Scene {
 
         // bind shader program
         defaultShader.use();
+
+        // upload texture to shader
+        // "hey we're uploading texture called TEX_SAMPLER into slot 0" - "oh ok ill activate the texture called that at slot 0"
+        // "ok good bro remember to bind it"
+        defaultShader.uploadTexture("TEX_SAMPLER", 0);
+        glActiveTexture(GL_TEXTURE0);
+        testTexture.bind();
+
+//        System.out.println("ShaderProgramID: " +  defaultShader.getShaderProgramID());
+//        int texLocation = glGetUniformLocation(shaderProgram, "TEX_SAMPLER");
+//        System.out.println("TEX_SAMPLER location: " + texLocation);
+
         defaultShader.uploadMat4f("uProjection", camera.getProjectionMatrix());
         defaultShader.uploadMat4f("uView", camera.getViewMatrix());
         defaultShader.uploadFloat("uTime", Time.getTimeStarted());
@@ -126,12 +149,14 @@ public class LevelEditorScene extends Scene {
         // enable vertex attributes pointers
         glEnableVertexAttribArray(0);
         glEnableVertexAttribArray(1);
+        glEnableVertexAttribArray(2);
 
         glDrawElements(GL_TRIANGLES, elementArray.length, GL_UNSIGNED_INT, 0);
 
         // unbind everything
         glDisableVertexAttribArray(0);
         glDisableVertexAttribArray(1);
+        glDisableVertexAttribArray(2);
 
         glBindVertexArray(0);
 

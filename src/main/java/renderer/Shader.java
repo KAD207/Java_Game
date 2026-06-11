@@ -110,6 +110,10 @@ public class Shader {
 
     }
 
+    public int getShaderProgramID(){
+        return shaderProgramID;
+    }
+
     public void use(){
         if (!beingUsed){
             // bind shader program
@@ -166,5 +170,11 @@ public class Shader {
         int varLocation = glGetUniformLocation(shaderProgramID, varName);
         use();
         glUniform1i(varLocation, value);
+    }
+
+    public void uploadTexture(String varName, int slot){
+        int varLocation = glGetUniformLocation(shaderProgramID, varName);
+        use();
+        glUniform1i(varLocation, slot);
     }
 }
