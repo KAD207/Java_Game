@@ -3,8 +3,11 @@ package WinPack;
 import components.SpriteRenderer;
 import org.joml.Vector2f;
 import org.joml.Vector4f;
+import utility.AssetPool;
 
 import java.awt.*;
+
+import static org.lwjgl.glfw.GLFW.*;
 
 public class LevelEditorScene extends Scene {
 
@@ -37,11 +40,31 @@ public class LevelEditorScene extends Scene {
 
             }
         }
+
+        loadResources();
+    }
+
+    public void loadResources(){
+        AssetPool.getShader("assets/shaders/default.glsl");
     }
 
     @Override
     public void update(float dt) {
-        System.out.println("FPS: " + (1.0f / dt));
+//        System.out.println("FPS: " + (1.0f / dt));
+
+        if (KeyListener.isKeyPressed(GLFW_KEY_D)){
+            camera.position.x -= 200 * dt;
+        }
+        else if (KeyListener.isKeyPressed(GLFW_KEY_A)){
+            camera.position.x += 200 * dt;
+        }
+        else if (KeyListener.isKeyPressed(GLFW_KEY_W)) {
+            camera.position.y -= 200 * dt;
+        }
+        else if (KeyListener.isKeyPressed(GLFW_KEY_S)){
+            camera.position.y += 200 * dt;
+        }
+
         for (GameObject go : this.gameObjects){
             go.update(dt);
         }
