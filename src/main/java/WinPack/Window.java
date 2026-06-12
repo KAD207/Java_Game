@@ -2,7 +2,6 @@ package WinPack;
 
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.opengl.GL;
-import utility.Time;
 
 import java.util.Objects;
 
@@ -129,7 +128,7 @@ public class Window {
 
     public void loop(){
 
-        float beginTime = Time.getTimeStarted();
+        float beginTime = (float)glfwGetTime();
         float dt = -1.0f;
 
         while (!glfwWindowShouldClose(glfwWindow)){
@@ -160,7 +159,7 @@ public class Window {
             glfwSwapBuffers(glfwWindow);
 
             // putting it here to improve time it takes to render
-            float endTime = Time.getTimeStarted();
+            float endTime = (float) glfwGetTime();
             dt = endTime - beginTime;
             beginTime = endTime;
         }
