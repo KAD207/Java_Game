@@ -1,6 +1,8 @@
 package WinPack;
 
+import components.Sprite;
 import components.SpriteRenderer;
+import components.Spritesheet;
 import org.joml.Vector2f;
 import org.joml.Vector4f;
 import utility.AssetPool;
@@ -17,26 +19,31 @@ public class LevelEditorScene extends Scene {
 
     @Override
     public void init(){
+        loadResources();
         this.camera = new Camera(new Vector2f(0, 0));
 
+        Spritesheet sprites = AssetPool.getSpriteSheet("assets/textures/spritesheet.png");
+
         GameObject obj1 = new GameObject("Object 1", new Transform(new Vector2f(100, 100), new Vector2f(256, 256)));
-        obj1.addComponent(new SpriteRenderer(AssetPool.getTexture("assets/textures/potato.png")));
+        obj1.addComponent(new SpriteRenderer(sprites.getSprite(0)));
         this.addGameObjectToScene(obj1);
 
         GameObject obj2 = new GameObject("Object 2", new Transform(new Vector2f(400, 100), new Vector2f(256, 256)));
-        obj2.addComponent(new SpriteRenderer(AssetPool.getTexture("assets/textures/carrot.png")));
+        obj2.addComponent(new SpriteRenderer(sprites.getSprite(15)));
         this.addGameObjectToScene(obj2);
-
-        loadResources();
     }
 
     public void loadResources(){
         AssetPool.getShader("assets/shaders/default.glsl");
+
+        AssetPool.addSpriteSheet("assets/textures/spritesheet.png",
+                new Spritesheet(AssetPool.getTexture("assets/textures/spritesheet.png"),
+                        16, 16, 26, 0));
     }
 
     @Override
     public void update(float dt) {
-        System.out.println("FPS: " + (1.0f / dt));
+//        System.out.println("FPS: " + (1.0f / dt));
 
         if (KeyListener.isKeyPressed(GLFW_KEY_D)){
             camera.position.x -= 200 * dt;

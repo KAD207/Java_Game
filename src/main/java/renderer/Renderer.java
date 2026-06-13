@@ -22,20 +22,23 @@ public class Renderer {
         }
     }
 
-    private void add(SpriteRenderer spr){
+    private void add(SpriteRenderer sprite){
         boolean added = false;
         for (RenderBatch batch : batches){
             if (batch.hasRoom()){
-                batch.addSprite(spr);
-                added = true;
-                break;
+                Texture tex = sprite.getTexture();
+                if (tex == null || (batch.hasTexture(tex) || batch.hasTextureRoom())) {
+                    batch.addSprite(sprite);
+                    added = true;
+                    break;
+                }
             }
         }
         if (!added){
             RenderBatch newBatch = new RenderBatch(MAX_BATCH_SIZE);
             newBatch.start();
             batches.add(newBatch);
-            newBatch.addSprite(spr);
+            newBatch.addSprite(sprite);
         }
     }
 
