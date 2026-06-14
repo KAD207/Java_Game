@@ -8,7 +8,5 @@ public abstract class Component {
 
     }
 
-    public abstract void start(float dt);
-
     public abstract void update(float dt);
 }

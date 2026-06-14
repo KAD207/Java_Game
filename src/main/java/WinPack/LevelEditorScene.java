@@ -4,14 +4,14 @@ import components.Sprite;
 import components.SpriteRenderer;
 import components.Spritesheet;
 import org.joml.Vector2f;
-import org.joml.Vector4f;
 import utility.AssetPool;
-
 import java.awt.*;
 
-import static org.lwjgl.glfw.GLFW.*;
-
 public class LevelEditorScene extends Scene {
+
+    private GameObject obj1;
+    Spritesheet sprites;
+
 
     public LevelEditorScene(){
 
@@ -22,14 +22,21 @@ public class LevelEditorScene extends Scene {
         loadResources();
         this.camera = new Camera(new Vector2f(0, 0));
 
-        Spritesheet sprites = AssetPool.getSpriteSheet("assets/textures/spritesheet.png");
+        sprites = AssetPool.getSpriteSheet("assets/textures/spritesheet.png");
+        // THE GREATER THE INDEX, THE MORE "ON-TOP" IT BECOMES
 
-        GameObject obj1 = new GameObject("Object 1", new Transform(new Vector2f(100, 100), new Vector2f(256, 256)));
-        obj1.addComponent(new SpriteRenderer(sprites.getSprite(0)));
+        obj1 = new GameObject("Object 1", new Transform(
+                new Vector2f(200, 100), new Vector2f(256, 256)), 4);
+        obj1.addComponent(new SpriteRenderer(new Sprite(
+                AssetPool.getTexture("assets/textures/blendImage1.png")
+        )));
         this.addGameObjectToScene(obj1);
 
-        GameObject obj2 = new GameObject("Object 2", new Transform(new Vector2f(400, 100), new Vector2f(256, 256)));
-        obj2.addComponent(new SpriteRenderer(sprites.getSprite(15)));
+        GameObject obj2 = new GameObject("Object 2", new Transform(
+                new Vector2f(400, 100), new Vector2f(256, 256)), 2);
+        obj2.addComponent(new SpriteRenderer(new Sprite(
+                AssetPool.getTexture("assets/textures/blendImage2.png")
+        )));
         this.addGameObjectToScene(obj2);
     }
 
@@ -44,20 +51,6 @@ public class LevelEditorScene extends Scene {
     @Override
     public void update(float dt) {
 //        System.out.println("FPS: " + (1.0f / dt));
-
-        if (KeyListener.isKeyPressed(GLFW_KEY_D)){
-            camera.position.x -= 200 * dt;
-        }
-        else if (KeyListener.isKeyPressed(GLFW_KEY_A)){
-            camera.position.x += 200 * dt;
-        }
-        else if (KeyListener.isKeyPressed(GLFW_KEY_W)) {
-            camera.position.y -= 200 * dt;
-        }
-        else if (KeyListener.isKeyPressed(GLFW_KEY_S)){
-            camera.position.y += 200 * dt;
-        }
-
         for (GameObject go : this.gameObjects){
             go.update(dt);
         }

@@ -7,7 +7,7 @@ public class FontRenderer extends Component {
 
 
     @Override
-    public void start(float dt) {
+    public void start() {
         if (gameObject.getComponent(SpriteRenderer.class) != null){
             System.out.println("Found Font Renderer");
         }

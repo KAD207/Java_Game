@@ -12,7 +12,7 @@ import java.util.List;
 
 import static org.lwjgl.opengl.GL30.*;
 
-public class RenderBatch {
+public class RenderBatch implements Comparable<RenderBatch>{
 
     // Vertex
     // ====================
@@ -42,8 +42,10 @@ public class RenderBatch {
     private int vaoID, vboID;
     private int maxBatchSize;
     private Shader shader;
+    private int zIndex;
 
-    public RenderBatch(int maxBatchSize){
+    public RenderBatch(int maxBatchSize, int zIndex) {
+        this.zIndex = zIndex;
 //        System.out.println("Creating new render batch");
         shader = AssetPool.getShader("assets/shaders/default.glsl");
         this.sprites = new SpriteRenderer[maxBatchSize];
@@ -115,9 +117,23 @@ public class RenderBatch {
     }
 
     public void render(){
-        // for now, we will rebuffer all data every time
-        glBindBuffer(GL_ARRAY_BUFFER, vboID);
-        glBufferSubData(GL_ARRAY_BUFFER, 0, vertices);
+        boolean rebufferData = false;
+        for (int i = 0; i < numSprites; i++){
+            SpriteRenderer spr = sprites[i];
+            if (spr.isDirty()){
+                loadVertexProperties(i);
+                spr.setClean();
+                rebufferData = true;
+//                System.out.println("Sprite " + i + " is dirty, rebuffering");
+            }
+
+        }
+
+
+        if (rebufferData){
+            glBindBuffer(GL_ARRAY_BUFFER, vboID);
+            glBufferSubData(GL_ARRAY_BUFFER, 0, vertices);
+        }
 
         // use shader
         shader.use();
@@ -247,5 +263,14 @@ public class RenderBatch {
 
     public boolean hasTexture(Texture texture){
         return this.textures.contains(texture);
+    }
+
+    public int getzIndex(){
+        return this.zIndex;
+    }
+
+    @Override
+    public int compareTo(RenderBatch o) {
+        return Integer.compare(this.zIndex, o.zIndex);
     }
 }
